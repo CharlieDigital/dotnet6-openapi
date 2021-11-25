@@ -220,7 +220,8 @@ Then in our `<main>`:
   {#await forecast}
     <p>Loading forecast...</p>
   {:then days}
-    { #each days as day}
+
+    {#each days as day}
       <p>{ day.summary }</p>
     {/each}
   {/await}
