@@ -145,26 +145,26 @@ This will use the schemas to generate the *client TypeScript* for interacting wi
 
 ### Automating with Yarn
 
-To simplify this, we can create a script that builds the full chain from.
+To simplify this, we can create a script that builds the full chain from the web project.
 
 Still in the `web` directory, modify the `package.json` file to add a script:
 
 ```json
 {
-  ...
+  // ...
   "scripts": {
     "codegen": "cd ../api && dotnet build && cd ../web && yarn openapi --input references/swagger.json --output references/codegen --client axios --postfix Service --useOptions --useUnionTypes"
-    ...
+    // ...
   }
-  ...
+  // ...
 }
 ```
 
 Now if we run `yarn run codegen` from the `web` project, this will:
 
 1. Build our .NET 6 WebAPI project
-2. Generate an updated `swagger.json` and `swagger.yaml` file
-3. Generate an updated TypeScript client
+2. Generate an updated `swagger.json` and `swagger.yaml` file in the `web/references` directory
+3. Generate an updated TypeScript client in the `web/references/client` directory
 
 Sweet!
 
@@ -183,7 +183,7 @@ app.UseCors(options => {
 });
 ```
 
-anywhere before `app.Run()`.  In a separate terminate in the `api` directory, start our API with `dotnet run`.  Pay attention to the port.
+anywhere before `app.Run()`.  In a separate terminal in the `api` directory, start our API with `dotnet run`.  Pay attention to the port.
 
 Now let's get back to our front-end.
 
@@ -228,4 +228,36 @@ Then in our `<main>`:
 
 Now our UI should display 5 days of forecasts 😎
 
+## Using .NET Hot Reload
 
+Instead of using
+
+```
+dotnet run
+```
+
+We can use:
+
+```
+dotnet watch
+```
+
+instead.
+
+Now in `api/Controllers/WeatherForecastController.cs`, we can change the number of days from 5 to 7:
+
+```csharp
+[HttpGet(Name = "GetWeatherForecast")]
+public IEnumerable<WeatherForecast> Get()
+{
+    return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+    {
+        Date = DateTime.Now.AddDays(index),
+        TemperatureC = Random.Shared.Next(-20, 55),
+        Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+    })
+    .ToArray();
+}
+```
+
+and then refresh our front-end to see 7 days instead of 5.
