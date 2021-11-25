@@ -217,14 +217,13 @@ In the top `<script>` tag:
 Then in our `<main>`:
 
 ```svelte
-  {#await forecast}
-    <p>Loading forecast...</p>
-  {:then days}
-
-    {#each days as day}
-      <p>{ day.summary }</p>
-    {/each}
-  {/await}
+{#await forecast}
+  <p>Loading forecast...</p>
+{:then days}
+  {#each days as day}
+    <p>{ day.summary }</p>
+  {/each}
+{/await}
 ```
 
 Now our UI should display 5 days of forecasts 😎
