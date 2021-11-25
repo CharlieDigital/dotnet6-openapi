@@ -1,0 +1,12 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "openapi-typescript-codegen": "^0.12.3"
+  },
+  "scripts": {
+    "build": "cd ../api && dotnet build && cd ../web && yarn openapi --input references/swagger.json --output references/codegen --client axios --postfix Service --useOptions --useUnionTypes"
+  }
+}
