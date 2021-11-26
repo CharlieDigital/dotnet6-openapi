@@ -84,7 +84,7 @@ mkdir codegen
 cd ../../api
 ```
 
-We've create a basic Svelte TypeScript application that will be built with vite.
+We've created a basic Svelte TypeScript application that will be built with vite.
 
 These next steps are adapted from: https://khalidabuhakmeh.com/generate-aspnet-core-openapi-spec-at-build-time
 
@@ -95,14 +95,14 @@ dotnet new tool-manifest
 dotnet tool install SwashBuckle.AspNetCore.Cli
 ```
 
-The `.csproj` file needs to be modified
+The `.csproj` file needs to be modified to invoke the CLI
 
 Update the `csproj` file:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
