@@ -8,6 +8,10 @@ OpenAPI makes it more productive than ever to work with REST APIs and paired wit
 
 See for more discussion and my thoughts on gRPC, GraphQL, and REST: https://charliedigital.com/2021/11/25/net-6-web-apis-openapi-typescript-client-generation/
 
+## Google Cloud Run Version
+
+If you want to see how to deploy this into Google Cloud Run, check out the branch here: https://github.com/CharlieDigital/dotnet6-openapi/tree/dockerized
+
 ## Organization
 
 This project is set up as a mono-repo for simplicity.
