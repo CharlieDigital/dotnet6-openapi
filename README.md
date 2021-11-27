@@ -2,14 +2,21 @@
 
 This is a sample application demonstrating .NET 6 with OpenAPI client code generation.
 
+While gRPC and GraphQL seem to be *en vogue*, REST with OpenAPI offers many of the same benefits in terms of contract and client generation.  REST can't match subscriptions and streaming capabilities built into gRPC and GraphQL (not to mention the other features on those platforms), but it's hard to beat the universal support for simple HTTP request/responses, ease of development, linear and predictable scaling of complexity, and maturity of REST.
+
+OpenAPI makes it more productive than ever to work with REST APIs and paired with managed WebSockets via [Azure SignalR](https://azure.microsoft.com/en-us/services/signalr-service/) or [Azure Web PubSub](https://azure.microsoft.com/en-us/services/web-pubsub/), building low-complexity, high performance web APIs is easier than ever.
+
+See for more discussion and my thoughts on gRPC, GraphQL, and REST: https://charliedigital.com/2021/11/25/net-6-web-apis-openapi-typescript-client-generation/
+
 ## Organization
 
 This project is set up as a mono-repo for simplicity.
 
 - `root`
   - `api` contains the .NET 6 web API
-  - `web` contains the static web front-end
+  - `web` contains the static web front-end in **Svelte**
     - `references` contains the generated client reference
+  - `web-vue` contains the static web front-end in **Vue**
 
 ## DIY
 
@@ -200,18 +207,17 @@ the `App.svelte` file is what we're going to modify.
 In the top `<script>` tag:
 
 ```javascript
-  // Import our client
-  import { OpenAPI, WeatherForecast, WeatherForecastService } from '../references/codegen/index'
+// Import our client
+import { OpenAPI, WeatherForecast, WeatherForecastService } from '../references/codegen/index'
+OpenAPI.BASE = "https://localhost:7277"; // Set this to match your local API endpoint.
 
-  OpenAPI.BASE = "https://localhost:7277"; // Set this to match your local API endpoint.
+// Async function
+async function loadForecast(): Promise<WeatherForecast[]> {
+  return await WeatherForecastService.getWeatherForecast();
+}
 
-  // Async function
-  async function loadForecast(): Promise<WeatherForecast[]> {
-    return await WeatherForecastService.getWeatherForecast();
-  }
-
-  // Promise handle
-  let forecast = loadForecast();
+// Promise handle
+let forecast = loadForecast();
 ```
 
 Then in our `<main>`:
@@ -227,6 +233,8 @@ Then in our `<main>`:
 ```
 
 Now our UI should display 5 days of forecasts 😎
+
+Side note: I'm not a huge fan of the Svelte template syntax.
 
 ## Using .NET Hot Reload
 
