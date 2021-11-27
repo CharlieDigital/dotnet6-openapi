@@ -269,3 +269,117 @@ public IEnumerable<WeatherForecast> Get()
 ```
 
 and then refresh our front-end to see 7 days instead of 5.
+
+## Google Cloud Run
+
+To get this into Google Cloud Run, we'll need to do a few things first.
+
+### Modify Program.cs
+
+By default, Google Cloud Run maps to port 8080 (we can choose others as well).  So in the Cloud Run environment, we want to explicitly listen on 8080.
+
+There are a variety of ways we can do this, but we'll simply add the environment variable `container` and modify our code like so:
+
+```csharp
+// In the container environment, we want to run this on 8080 for GCR
+// This means that we will need to add the environment variable in the
+// Dockerfile.
+if(app.Environment.IsEnvironment("container")) {
+    app.Urls.Add("http://0.0.0.0:8080"); // Supoorts Google Cloud Run.
+}
+```
+
+Note that the Swashbuckle CLI will fail if we set this URL in development so we only want to set the URL and port explicitly for the Google Cloud Run environment.
+
+*(You may want to use a different mechanism for this based on your specific scenario but the gist of it is that in Google Cloud Run, we need to use a specific port)*
+
+### Add a Dockerfile
+
+Create a file `api/Dockerfile` with the following contents:
+
+```Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine as build
+WORKDIR /app
+COPY . .
+RUN dotnet restore
+RUN dotnet publish -o /app/published-app --configuration Release
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine as runtime
+WORKDIR /app
+COPY --from=build /app/published-app /app
+ENV ASPNETCORE_ENVIRONMENT=container
+ENTRYPOINT [ "dotnet", "/app/api.dll" ]
+```
+
+Note the `ASPNETCORE_ENVIRONMENT=container` and the final line `api.dll` which has to match the project output name.
+
+The `--configuration Release` will bypass the Swagger generation on build.
+
+A this point, you can run the following command to build the API:
+
+```
+docker build . -t dotnet6-webapi-forecast
+```
+
+That will build the image.
+
+### Run and Test the Docker Container
+
+Now we can start the container to make sure everything is ship-shape for Google Cloud Run:
+
+```
+docker run --name dotnet6-webapi-forecast -p 8080:8080 -d dotnet6-webapi-forecast
+```
+
+That will start the container.
+
+Since it is no longer running in development mode (unless we set `ASPNETCORE_ENVIRONMENT` to `Development`), we no longer have access to the Swagger endpoints.
+
+To test the API, we can now use `curl` instead:
+
+```
+curl http://localhost:8080/WeatherForecast
+```
+
+Which will generate a response like:
+
+```
+StatusCode        : 200
+StatusDescription : OK
+Content           : [{"date":"2021-11-28T22:01:53.2322512+00:00","temperatureC":52,"temperatureF":125,"summary":"Warm"}
+                    ,{"date":"2021-11-29T22:01:53.232276+00:00","temperatureC":43,"temperatureF":109,"summary":"Chilly"
+                    },...
+RawContent        : HTTP/1.1 200 OK
+                    Transfer-Encoding: chunked
+                    Content-Type: application/json; charset=utf-8
+                    Date: Sat, 27 Nov 2021 22:01:52 GMT
+                    Server: Kestrel
+
+                    [{"date":"2021-11-28T22:01:53.2322512+00:00","temper...
+Forms             : {}
+Headers           : {[Transfer-Encoding, chunked], [Content-Type, application/json; charset=utf-8], [Date, Sat, 27 Nov
+                    2021 22:01:52 GMT], [Server, Kestrel]}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 495
+```
+
+### Getting it Into Google Cloud Run
+
+I couldn't get Google Console to connect my GitHub repo through Cloud Build or Cloud Run so I ended up mirroring the repo into Google.
+
+Once mirrored into Google, we can configure it to build off our branch `dockerized`:
+
+![Configuration](./static/gcr-cloud-build-setup.png)
+
+Finally, be sure to allow **unauthenticated access** and we're ready to deploy.
+
+If everything goes right, Cloud Run takes over and starts to build your image.
+
+You'll get a URL like this:
+
+![URL](static/cloud-run-url.png)
+
+And if we `curl https://dotnet6-webapi-forecast-YOUR-URL.a.run.app/WeatherForecast`, we'll get our result 🎉
