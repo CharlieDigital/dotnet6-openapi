@@ -311,17 +311,17 @@ ENV ASPNETCORE_ENVIRONMENT=container
 ENTRYPOINT [ "dotnet", "/app/api.dll" ]
 ```
 
-Note the `ASPNETCORE_ENVIRONMENT=container` and the final line `api.dll` which has to match the project output name.
+Note the `ASPNETCORE_ENVIRONMENT=container` which is used to specify listening on port 8080 when we deploy to Google Cloud Run and the final line `api.dll` which has to match the project output name.
 
 The `--configuration Release` will bypass the Swagger generation on build.
 
-A this point, you can run the following command to build the API:
+At this point, you can run the following command to build the API:
 
 ```
 docker build . -t dotnet6-webapi-forecast
 ```
 
-That will build the image.
+That will build and tag the image.
 
 ### Run and Test the Docker Container
 
@@ -331,11 +331,11 @@ Now we can start the container to make sure everything is ship-shape for Google 
 docker run --name dotnet6-webapi-forecast -p 8080:8080 -d dotnet6-webapi-forecast
 ```
 
-That will start the container.
+That will start the container.  Once we confirm that the container is set up properly, we won't need to work with Docker any more unless we want to deploy to Google Cloud Artifacts/Registry and use that as the source for our Google Cloud Run application.
 
-Since it is no longer running in development mode (unless we set `ASPNETCORE_ENVIRONMENT` to `Development`), we no longer have access to the Swagger endpoints.
+Since the app is no longer running in development mode (unless we set `ASPNETCORE_ENVIRONMENT` to `Development`), we no longer have access to the Swagger endpoints.
 
-To test the API, we can now use `curl` instead:
+Therefore, to test the API, we must now use `curl` instead:
 
 ```
 curl http://localhost:8080/WeatherForecast
@@ -370,7 +370,7 @@ RawContentLength  : 495
 
 I couldn't get Google Console to connect my GitHub repo through Cloud Build or Cloud Run so I ended up mirroring the repo into Google.
 
-Once mirrored into Google, we can configure it to build off our branch `dockerized`:
+Once mirrored into Google, we can configure it to build off this branch `dockerized`:
 
 ![Configuration](./static/gcr-cloud-build-setup.png)
 
@@ -378,7 +378,7 @@ Finally, be sure to allow **unauthenticated access** and we're ready to deploy.
 
 If everything goes right, Cloud Run takes over and starts to build your image.
 
-You'll get a URL like this:
+Once ready, you'll get a URL like this:
 
 ![URL](static/cloud-run-url.png)
 
