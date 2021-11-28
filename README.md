@@ -1,4 +1,4 @@
-# .NET 6 OpenAPI with TypeScript Client Generation
+# .NET 6 OpenAPI with TypeScript Client Generation (Now with 100% More Google Cloud Run)
 
 This is a sample application demonstrating .NET 6 with OpenAPI client code generation.
 
