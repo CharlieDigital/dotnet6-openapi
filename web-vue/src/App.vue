@@ -28,6 +28,7 @@ loadForecast();
   <div>
     <img alt="Vue logo" src="./assets/logo.png" />
     <HelloWorld msg="Hello Vue 3 + TypeScript + Vite" />
+
     <p v-for="day in forecast" :key="day.date">
       {{ day.summary }}
     </p>
