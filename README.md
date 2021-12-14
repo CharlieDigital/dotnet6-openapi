@@ -196,7 +196,10 @@ Now let's get back to our front-end.
 
 To see it, we switch into the `web` directory and run `yarn dev`
 
+(After pulling, run `yarn` to update the packages)
+
 ```
+yarn
 yarn dev
 ```
 
@@ -235,6 +238,17 @@ Then in our `<main>`:
 Now our UI should display 5 days of forecasts 😎
 
 Side note: I'm not a huge fan of the Svelte template syntax.
+
+## Vue Version
+
+The directory `web-vue` contains the same example in Vue.
+
+To start it, do the same:
+
+```
+yarn
+yarn dev
+```
 
 ## Using .NET Hot Reload
 
@@ -383,3 +397,11 @@ Once ready, you'll get a URL like this:
 ![URL](static/cloud-run-url.png)
 
 And if we `curl https://dotnet6-webapi-forecast-YOUR-URL.a.run.app/WeatherForecast`, we'll get our result 🎉
+
+## Recommended Extensions
+
+To get the best experience, install the following VS Code extensions:
+
+* [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar): Provides Vue intellisense; Veture does not work well with intellisense within templates.
+* [Svelte for VS Code](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode): Provides Svelte intellisense
+* [OmniSharp](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp): Provides C# intellisense
